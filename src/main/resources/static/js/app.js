@@ -209,6 +209,9 @@
       renderAll();
       return;
     }
+    state.user = state.session.user || null;
+    state.progress = [];
+    renderAll();
     try {
       const [me, progress] = await Promise.all([requestApi('/api/me'), requestApi('/api/progress')]);
       state.user = me;
@@ -216,6 +219,7 @@
       await loadLeaderboard();
       renderAll();
     } catch (error) {
+      renderAll();
       showToast(error.message || 'โหลดข้อมูลบัญชีไม่สำเร็จ', 'error');
     }
   }
@@ -247,6 +251,10 @@
       state.lessons.find((lesson) => !isCompleted(lesson.id) && unlocked(lesson)) ||
       state.lessons[0] ||
       null;
+  }
+
+  function getNextAvailableLesson() {
+    return state.lessons.find((lesson) => !isCompleted(lesson.id) && unlocked(lesson)) || null;
   }
 
   function renderPathItem(lesson, compact = false) {
@@ -645,9 +653,33 @@
         });
         xpEarned = Number(result.xp_earned || 0);
         saved = true;
-        const [me, progress] = await Promise.all([requestApi('/api/me'), requestApi('/api/progress')]);
-        state.user = me;
-        state.progress = progress;
+        const existing = progressRows().find((row) => lessonIdFromProgress(row) === quiz.lesson.id);
+        const completedRow = {
+          ...existing,
+          lesson_id: quiz.lesson.id,
+          score: Math.max(Number(existing?.score || 0), Number(result.best_score ?? score)),
+          max_score: quiz.questions.length,
+          completed: Boolean(result.completed ?? (existing?.completed || passed)),
+          attempts: Number(existing?.attempts || 0) + 1,
+          updated_at: new Date().toISOString()
+        };
+        state.progress = [
+          ...progressRows().filter((row) => lessonIdFromProgress(row) !== quiz.lesson.id),
+          completedRow
+        ];
+        if (state.user) {
+          state.user = {
+            ...state.user,
+            total_xp: Number(state.user.total_xp ?? state.user.totalXp ?? 0) + xpEarned
+          };
+        }
+        try {
+          const [me, progress] = await Promise.all([requestApi('/api/me'), requestApi('/api/progress')]);
+          state.user = me;
+          state.progress = Array.isArray(progress) ? progress : state.progress;
+        } catch (error) {
+          showToast(`บันทึกผลแล้ว แต่รีเฟรชข้อมูลไม่สำเร็จ: ${error.message}`, 'error');
+        }
       }
       if (passed && saved) {
         state.todayDone = true;
@@ -673,7 +705,7 @@
       <p class="eyebrow centered">YOUR RESULTS</p><h2 class="quiz-result-title">${title}</h2><p class="quiz-result-subtitle">${subtitle}</p>
       <div class="quiz-score-card"><div><strong>${score}<small>/${total}</small></strong><span>คะแนนของคุณ</span></div><div><strong>✦ ${xpEarned}</strong><span>XP ที่ได้รับ</span></div><div><strong>${passed ? 'ผ่าน' : 'ฝึกต่อ'}</strong><span>สถานะบทเรียน</span></div></div>
       ${!saved ? `<p class="quiz-save-error">ผลยังไม่ได้บันทึก: ${escapeHTML(errorMessage || 'เกิดข้อผิดพลาด')} กรุณาตรวจการเชื่อมต่อแล้วลองทำแบบทดสอบอีกครั้ง</p>` : ''}
-      <button class="button button-primary full-button" id="quiz-result-close">${passed ? 'ไปต่อกันเลย' : 'ลองทำอีกครั้ง'} <span>→</span></button>
+      <button class="button button-primary full-button" id="quiz-result-close">${passed && saved && getNextAvailableLesson() ? 'ไปบทถัดไป' : passed && saved ? 'กลับสู่เส้นทางเรียน' : 'ลองทำอีกครั้ง'} <span>→</span></button>
       <button class="button button-outline full-button" id="quiz-result-path">กลับไปเส้นทางเรียน</button>`;
     $('quiz-result-close').addEventListener('click', () => {
       const lessonId = state.quiz?.lesson.id;
@@ -682,7 +714,9 @@
       if (!passed || !saved) {
         if (lessonId) openQuiz(lessonId);
       } else {
-        setView('learn');
+        const nextLesson = getNextAvailableLesson();
+        if (nextLesson) openQuiz(nextLesson.id);
+        else setView('learn');
       }
     });
     $('quiz-result-path').addEventListener('click', () => { $('quiz-modal').classList.add('hidden'); state.quiz = null; setView('learn'); });
@@ -699,7 +733,7 @@
     document.querySelectorAll('.mobile-nav-link').forEach((button) => button.addEventListener('click', () => setView(button.dataset.view)));
     document.querySelectorAll('[data-go-view]').forEach((button) => button.addEventListener('click', () => setView(button.dataset.goView)));
     $('continue-button').addEventListener('click', () => {
-      const next = state.lessons.find((lesson) => !isCompleted(lesson.id) && unlocked(lesson)) || state.lessons[0];
+      const next = getNextAvailableLesson() || state.lessons[0];
       if (next) openQuiz(next.id);
     });
     $('full-lesson-grid').addEventListener('click', (event) => {

@@ -57,6 +57,8 @@ javalingo/
    };
    ```
 
+   ค่า URL และ Publishable key ในไฟล์นี้ต้องตรงกับค่าของ Spring Boot ใน `src/main/resources/application.properties` หรือ environment variables ด้านล่าง
+
 5. ใน Supabase Dashboard เข้า **Authentication → URL Configuration** ตั้ง Site URL เป็น `http://localhost:8080` สำหรับ local development
 6. หากเปิด Email confirmation ไว้ ให้ยืนยันอีเมลที่ได้รับก่อนเข้าสู่ระบบ หรือปรับการยืนยันอีเมลใน Supabase Auth ตามความต้องการของโปรเจกต์
 7. ตรวจให้แน่ใจว่าเปิด Data API สำหรับตาราง `profiles` และ `user_progress` แล้ว หากโปรเจกต์จำกัด schema exposure ให้เปิด schema `public` ตามนโยบายของโปรเจกต์
@@ -71,7 +73,7 @@ javalingo/
 
 1. เปิดโฟลเดอร์ `javalingo` ใน VS Code
 2. เปิด Terminal ในโฟลเดอร์โปรเจกต์
-3. ตั้งค่า URL และ key ให้ Spring Boot (สำหรับ PowerShell):
+3. ค่าเริ่มต้นของ Spring Boot ตั้งให้ตรงกับ `config.js` ใน repository นี้แล้ว หากใช้ Supabase โปรเจกต์อื่น ให้กำหนด URL และ key ก่อนเริ่มแอป (สำหรับ PowerShell):
 
    ```powershell
    $env:SUPABASE_URL="https://your-project-ref.supabase.co"

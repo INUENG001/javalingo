@@ -22,6 +22,9 @@ public class AuthService {
 
     public Map<String, Object> requireUser(String authorizationHeader) {
         String token = requireAccessToken(authorizationHeader);
+        if (!supabaseGateway.isConfigured()) {
+            throw new IllegalStateException("Supabase ยังไม่ได้ตั้งค่า กรุณากำหนด SUPABASE_URL และ SUPABASE_PUBLISHABLE_KEY ให้ Spring Boot");
+        }
         try {
             Map<String, Object> user = supabaseGateway.verifyAccessToken(token);
             if (user == null || user.get("id") == null) {
