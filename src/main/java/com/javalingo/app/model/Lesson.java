@@ -1,4 +1,4 @@
-package com.javawave.app.model;
+package com.javalingo.app.model;
 
 /** Immutable domain model for one unit in the Java learning path. */
 public record Lesson(

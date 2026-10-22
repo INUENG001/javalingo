@@ -1,6 +1,6 @@
-package com.javawave.app.service;
+package com.javalingo.app.service;
 
-import com.javawave.app.supabase.SupabaseGateway;
+import com.javalingo.app.supabase.SupabaseGateway;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;

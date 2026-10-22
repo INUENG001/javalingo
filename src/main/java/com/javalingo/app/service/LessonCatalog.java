@@ -1,6 +1,6 @@
-package com.javawave.app.service;
+package com.javalingo.app.service;
 
-import com.javawave.app.model.Lesson;
+import com.javalingo.app.model.Lesson;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

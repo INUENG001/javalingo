@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const CONFIG = window.JAVAWAVE_CONFIG || {};
+  const CONFIG = window.JAVALINGO_CONFIG || window.JAVAWAVE_CONFIG || {};
   const hasSupabaseConfig = Boolean(
     window.supabase && CONFIG.SUPABASE_URL && CONFIG.SUPABASE_PUBLISHABLE_KEY &&
     CONFIG.SUPABASE_URL.startsWith('https://') && !CONFIG.SUPABASE_URL.includes('YOUR_PROJECT') &&
@@ -72,7 +72,8 @@
     { id: 'sample-ken', username: 'kenji.java', total_xp: 410 },
     { id: 'sample-fah', username: 'fah.codes', total_xp: 280 }
   ];
-  const STORAGE = { progress: 'javawave_demo_progress_v1', user: 'javawave_demo_user_v1', today: 'javawave_did_today_v1', streak: 'javawave_streak_v1' };
+  const STORAGE = { progress: 'javalingo_demo_progress_v1', user: 'javalingo_demo_user_v1', today: 'javalingo_did_today_v1', streak: 'javalingo_streak_v1' };
+  const LEGACY_STORAGE = { progress: 'javawave_demo_progress_v1', user: 'javawave_demo_user_v1', today: 'javawave_did_today_v1', streak: 'javawave_streak_v1' };
   const state = {
     demo: false, session: null, user: null, lessons: FALLBACK_LESSONS.slice(), progress: [],
     leaderboard: SAMPLE_LEADERBOARD.slice(), leaderboardIsSample: true, currentView: 'home', authMode: 'login',
@@ -91,15 +92,31 @@
     return Number(state.user?.total_xp ?? state.user?.totalXp ?? 0);
   };
   const getDisplayName = () => prettyName(state.user?.username || state.user?.user_metadata?.username || state.user?.email?.split('@')[0] || 'นักพัฒนา');
-  const getDemoProgress = () => {
-    try { return JSON.parse(localStorage.getItem(STORAGE.progress) || '[]'); } catch { return []; }
+  const readMigratedStorage = (key, fallback) => {
+    try {
+      const current = localStorage.getItem(STORAGE[key]);
+      if (current !== null) return JSON.parse(current);
+      const legacy = localStorage.getItem(LEGACY_STORAGE[key]);
+      if (legacy === null) return fallback;
+      localStorage.setItem(STORAGE[key], legacy);
+      return JSON.parse(legacy);
+    } catch { return fallback; }
   };
-  const getDemoUser = () => {
-    try { return JSON.parse(localStorage.getItem(STORAGE.user) || 'null'); } catch { return null; }
+  const readMigratedString = (key, fallback = '') => {
+    try {
+      const current = localStorage.getItem(STORAGE[key]);
+      if (current !== null) return current;
+      const legacy = localStorage.getItem(LEGACY_STORAGE[key]);
+      if (legacy === null) return fallback;
+      localStorage.setItem(STORAGE[key], legacy);
+      return legacy;
+    } catch { return fallback; }
   };
+  const getDemoProgress = () => readMigratedStorage('progress', []);
+  const getDemoUser = () => readMigratedStorage('user', null);
   const dayKey = (date = new Date()) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
   const getStreakRecord = () => {
-    try { return JSON.parse(localStorage.getItem(STORAGE.streak) || '{"lastDate":"","count":0}'); }
+    try { return readMigratedStorage('streak', { lastDate: '', count: 0 }); }
     catch { return { lastDate: '', count: 0 }; }
   };
   const currentStreak = () => {
@@ -178,7 +195,7 @@
       state.progress = getDemoProgress();
       state.user.total_xp = state.progress.reduce((sum, row) => sum + Number(row.xp_earned || 0), 0);
       localStorage.setItem(STORAGE.user, JSON.stringify(state.user));
-      state.todayDone = localStorage.getItem(STORAGE.today) === new Date().toDateString();
+      state.todayDone = readMigratedString('today') === new Date().toDateString();
       state.streak = currentStreak();
       await loadLeaderboard();
       renderAll();
@@ -209,6 +226,29 @@
     return Boolean(previous && isCompleted(previous.id));
   }
 
+  function getLatestCompletedLesson() {
+    const latest = progressRows()
+      .filter((row) => row.completed === true)
+      .map((row, index) => ({
+        row,
+        index,
+        timestamp: Date.parse(row.updated_at || row.updatedAt || '')
+      }))
+      .sort((a, b) => {
+        const timeDifference = (Number.isFinite(b.timestamp) ? b.timestamp : -Infinity) -
+          (Number.isFinite(a.timestamp) ? a.timestamp : -Infinity);
+        return timeDifference || b.index - a.index;
+      })[0];
+    return latest ? state.lessons.find((lesson) => lesson.id === lessonIdFromProgress(latest.row)) || null : null;
+  }
+
+  function getDefaultFocusLesson() {
+    return getLatestCompletedLesson() ||
+      state.lessons.find((lesson) => !isCompleted(lesson.id) && unlocked(lesson)) ||
+      state.lessons[0] ||
+      null;
+  }
+
   function renderPathItem(lesson, compact = false) {
     const complete = isCompleted(lesson.id);
     const open = unlocked(lesson);
@@ -232,18 +272,40 @@
     $('chapter-count').textContent = `${done} / ${state.lessons.length}`;
   }
 
+  function renderLessonFocus(lesson, isLatest = false) {
+    if (!lesson) {
+      $('lesson-focus').innerHTML = '<p class="muted">ยังไม่มีบทเรียน</p>';
+      return;
+    }
+    const open = unlocked(lesson);
+    const complete = isCompleted(lesson.id);
+    const progress = progressRows().find((row) => lessonIdFromProgress(row) === lesson.id);
+    const score = Number(progress?.score ?? progress?.best_score ?? 0);
+    const maxScore = Number(progress?.max_score ?? lesson.totalQuestions ?? 5);
+    const progressLabel = complete ? 'ผ่านบทเรียนแล้ว' : open ? 'พร้อมเริ่มเรียน' : 'บทเรียนนี้ยังล็อกอยู่';
+    const scoreClass = score >= 1 && score <= 2
+      ? 'score-low'
+      : score >= 3 && score <= 4 ? 'score-medium' : score >= 5 ? 'score-perfect' : 'score-neutral';
+    const scoreMarkup = progress
+      ? `<p class="focus-score">คะแนนที่เคยทำได้ <strong class="${scoreClass}">${score} / ${maxScore}</strong></p>`
+      : '';
+    const actionLabel = complete ? 'ทำซ้ำอีกครั้ง' : open ? 'เริ่มบทเรียน' : 'ล็อกอยู่ · ผ่านบทก่อนหน้าเพื่อปลดล็อก';
+    const actionIcon = complete || open ? '<span>→</span>' : '';
+    $('lesson-focus').innerHTML = `<p class="eyebrow">${isLatest ? 'หัวข้อบทเรียนล่าสุดที่เรียน' : 'รายละเอียดบทเรียน'}</p><div class="focus-icon">${escapeHTML(lesson.icon)}</div><span class="focus-kicker">บทที่ ${String(lesson.order).padStart(2, '0')} · ${escapeHTML(lesson.level)}</span><h2>${escapeHTML(lesson.title)}</h2><p class="focus-description"><span class="focus-description-label">รายละเอียดบทเรียน</span>${escapeHTML(lesson.description || lesson.subtitle || '')}</p><p class="focus-availability ${open ? '' : 'is-locked'}">${progressLabel}</p>${scoreMarkup}<div class="focus-meta"><span>✦ ${Number(lesson.xpReward || 25)} XP</span><span>${lesson.totalQuestions || 5} คำถาม</span></div><button class="button ${open ? 'button-primary' : 'button-outline'} full-button" data-start-lesson="${escapeHTML(lesson.id)}" ${open ? '' : 'disabled'}>${actionLabel} ${actionIcon}</button>`;
+  }
+
   function renderFullLessons() {
+    const latestLesson = getLatestCompletedLesson();
+    const defaultLesson = getDefaultFocusLesson();
     $('full-lesson-grid').innerHTML = state.lessons.map((lesson) => {
       const complete = isCompleted(lesson.id);
       const open = unlocked(lesson);
-      const disabled = !open;
-      return `<article class="lesson-card ${disabled ? 'is-locked' : ''}">
-        <div class="lesson-card-top"><span class="lesson-card-icon">${escapeHTML(lesson.icon)}</span><span class="lesson-level">${escapeHTML(lesson.level)}</span></div>
-        ${complete ? '<span class="card-complete">✓ PASSED</span>' : ''}
-        <h3>${escapeHTML(lesson.title)}</h3><p>${escapeHTML(lesson.description || lesson.subtitle || '')}</p>
-        <div class="lesson-card-footer"><span class="lesson-xp">✦ ${Number(lesson.xpReward || 25)} XP · 5 ข้อ</span><button class="lesson-action" data-start-lesson="${escapeHTML(lesson.id)}" ${disabled ? 'disabled' : ''}>${complete ? 'ฝึกซ้ำ ↗' : disabled ? '🔒 ยังไม่ปลดล็อก' : 'เริ่มบทเรียน ↗'}</button></div>
-      </article>`;
+      return `<button type="button" class="lesson-node ${complete ? 'is-complete' : ''} ${open ? '' : 'is-locked'} ${defaultLesson?.id === lesson.id ? 'is-current is-previewing' : ''}" data-start-lesson="${escapeHTML(lesson.id)}" ${open ? '' : 'aria-disabled="true"'} aria-label="บทที่ ${lesson.order}: ${escapeHTML(lesson.title)}${open ? ', เริ่มบทเรียน' : ', ล็อกอยู่'}">
+        <span class="node-orbit"><span class="node-icon">${complete ? '✓' : escapeHTML(lesson.icon)}</span></span>
+        <span class="node-copy"><small>บทที่ ${String(lesson.order).padStart(2, '0')} · ${escapeHTML(lesson.level)}</small><strong>${escapeHTML(lesson.title)}</strong><span>${complete ? 'ผ่านแล้ว' : open ? `${Number(lesson.xpReward || 25)} XP · ${lesson.totalQuestions || 5} ข้อ` : 'ปลดล็อกเมื่อผ่านบทก่อนหน้า'}</span></span>
+      </button>`;
     }).join('');
+    renderLessonFocus(defaultLesson, Boolean(latestLesson));
     const done = completedCount();
     const percentage = Math.round(done / Math.max(state.lessons.length, 1) * 100);
     $('learn-summary-xp').textContent = `${getXp()} XP`;
@@ -313,7 +375,7 @@
     $('goal-count').textContent = state.todayDone ? '1/1' : '0/1';
     $('goal-status').textContent = state.todayDone ? 'สำเร็จแล้ว!' : 'เริ่มกันเลย!';
     $('goal-subtext').textContent = state.todayDone ? 'ภารกิจวันนี้ครบแล้ว ยอดเยี่ยม!' : 'อีกเพียง 1 บทก็สำเร็จแล้ว';
-    $('goal-ring').style.background = state.todayDone ? 'conic-gradient(#36bba4 360deg, #ebf4f0 0deg)' : 'conic-gradient(#36bba4 0deg, #ebf4f0 0deg)';
+    $('goal-ring').style.background = state.todayDone ? 'conic-gradient(#00d4ad 360deg, #2c4247 0deg)' : 'conic-gradient(#00d4ad 0deg, #2c4247 0deg)';
     $('demo-banner').classList.toggle('hidden', !state.demo);
     renderHomeLessons();
     renderFullLessons();
@@ -326,7 +388,7 @@
     if (!['home', 'learn', 'leaderboard', 'profile'].includes(view)) view = 'home';
     state.currentView = view;
     document.querySelectorAll('.page-view').forEach((section) => section.classList.toggle('active', section.id === `view-${view}`));
-    document.querySelectorAll('.nav-link').forEach((button) => button.classList.toggle('active', button.dataset.view === view));
+    document.querySelectorAll('.nav-link, .mobile-nav-link').forEach((button) => button.classList.toggle('active', button.dataset.view === view));
     const labels = { home: 'ภาพรวม', learn: 'เส้นทางเรียน', leaderboard: 'ตารางคะแนน', profile: 'โปรไฟล์ของฉัน' };
     $('breadcrumb-current').textContent = labels[view];
     if (scroll) window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -339,7 +401,7 @@
     $('auth-username').required = mode === 'signup';
     $('auth-password').autocomplete = mode === 'signup' ? 'new-password' : 'current-password';
     $('auth-submit').innerHTML = mode === 'signup' ? 'สร้างบัญชี <span>→</span>' : 'เข้าสู่ระบบ <span>→</span>';
-    $('auth-title').textContent = mode === 'signup' ? 'สร้างบัญชี JavaWave' : 'เริ่มต้นการเดินทางของคุณ';
+    $('auth-title').textContent = mode === 'signup' ? 'สร้างบัญชี Javalingo' : 'เริ่มต้นการเดินทางของคุณ';
     hideAuthMessage();
   }
 
@@ -358,7 +420,7 @@
     state.session = null;
     state.user = getDemoUser() || { id: 'demo-user', username: 'WaveCoder', email: 'ตัวอย่างในเครื่อง', total_xp: 0 };
     state.progress = getDemoProgress();
-    const storedToday = localStorage.getItem(STORAGE.today);
+    const storedToday = readMigratedString('today');
     state.todayDone = storedToday === new Date().toDateString();
     state.streak = currentStreak();
     localStorage.setItem(STORAGE.user, JSON.stringify(state.user));
@@ -372,7 +434,7 @@
     state.session = session;
     $('auth-gate').classList.add('hidden');
     await loadUserData();
-    showToast('เข้าสู่ระบบสำเร็จ ยินดีต้อนรับสู่ JavaWave!');
+    showToast('เข้าสู่ระบบสำเร็จ ยินดีต้อนรับสู่ Javalingo!');
   }
 
   async function handleAuthSubmit(event) {
@@ -443,11 +505,39 @@
       showToast('ผ่านบทก่อนหน้าเพื่อปลดล็อกบทนี้ก่อนนะ', 'error');
       return;
     }
+    $('quiz-modal').classList.remove('is-history-result');
     state.quiz = { lesson, questions: QUIZZES[lessonId] || QUIZZES['java-basics'], index: 0, answers: [], selected: null, checked: false };
     $('quiz-modal').classList.remove('hidden');
     $('quiz-question-area').classList.remove('hidden');
     $('quiz-result-area').classList.add('hidden');
     renderQuizQuestion();
+  }
+
+  function showPreviousLessonResult(lesson) {
+    const progress = progressRows().find((row) => lessonIdFromProgress(row) === lesson.id);
+    if (!progress) return;
+    const score = Number(progress.score ?? progress.best_score ?? 0);
+    const total = Number(progress.max_score ?? lesson.totalQuestions ?? 5);
+    const scoreClass = score <= 2 ? 'score-low' : score <= 4 ? 'score-medium' : 'score-perfect';
+    $('quiz-title').textContent = lesson.title;
+    $('quiz-modal').classList.add('is-history-result');
+    $('quiz-modal').classList.remove('hidden');
+    $('quiz-question-area').classList.add('hidden');
+    $('quiz-result-area').classList.remove('hidden');
+    $('quiz-result-area').innerHTML = `<div class="historical-result-view">
+      <h2 class="historical-result-title">${escapeHTML(lesson.title)}</h2>
+      <p class="historical-score-label">คะแนนที่ได้</p>
+      <strong class="historical-score ${scoreClass}">${score}/${total}</strong>
+      <div class="historical-result-actions">
+        <button class="button historical-back" id="historical-result-back">ย้อนกลับ</button>
+        <button class="button button-primary historical-retry" id="historical-result-retry">ทำอีกครั้ง</button>
+      </div>
+    </div>`;
+    $('historical-result-back').addEventListener('click', () => {
+      closeQuiz();
+      setView('learn');
+    });
+    $('historical-result-retry').addEventListener('click', () => openQuiz(lesson.id));
   }
 
   function renderQuizQuestion() {
@@ -598,16 +688,48 @@
     $('quiz-result-path').addEventListener('click', () => { $('quiz-modal').classList.add('hidden'); state.quiz = null; setView('learn'); });
   }
 
-  function closeQuiz() { $('quiz-modal').classList.add('hidden'); state.quiz = null; }
+  function closeQuiz() {
+    $('quiz-modal').classList.add('hidden');
+    $('quiz-modal').classList.remove('is-history-result');
+    state.quiz = null;
+  }
 
   function initEvents() {
     document.querySelectorAll('.nav-link').forEach((button) => button.addEventListener('click', () => setView(button.dataset.view)));
+    document.querySelectorAll('.mobile-nav-link').forEach((button) => button.addEventListener('click', () => setView(button.dataset.view)));
     document.querySelectorAll('[data-go-view]').forEach((button) => button.addEventListener('click', () => setView(button.dataset.goView)));
     $('continue-button').addEventListener('click', () => {
       const next = state.lessons.find((lesson) => !isCompleted(lesson.id) && unlocked(lesson)) || state.lessons[0];
       if (next) openQuiz(next.id);
     });
     $('full-lesson-grid').addEventListener('click', (event) => {
+      const button = event.target.closest('.lesson-node');
+      if (!button || !$('full-lesson-grid').contains(button)) return;
+      $('full-lesson-grid').querySelector('.is-previewing')?.classList.remove('is-previewing');
+      button.classList.add('is-previewing');
+      const lesson = state.lessons.find((item) => item.id === button.dataset.startLesson);
+      if (lesson) {
+        renderLessonFocus(lesson);
+        if (isCompleted(lesson.id)) showPreviousLessonResult(lesson);
+      }
+    });
+    $('full-lesson-grid').addEventListener('pointerover', (event) => {
+      const button = event.target.closest('.lesson-node');
+      if (!button || !$('full-lesson-grid').contains(button) || button.classList.contains('is-previewing')) return;
+      $('full-lesson-grid').querySelector('.is-previewing')?.classList.remove('is-previewing');
+      button.classList.add('is-previewing');
+      const lesson = state.lessons.find((item) => item.id === button.dataset.startLesson);
+      if (lesson) renderLessonFocus(lesson);
+    });
+    $('full-lesson-grid').addEventListener('focusin', (event) => {
+      const button = event.target.closest('.lesson-node');
+      if (!button || button.classList.contains('is-previewing')) return;
+      $('full-lesson-grid').querySelector('.is-previewing')?.classList.remove('is-previewing');
+      button.classList.add('is-previewing');
+      const lesson = state.lessons.find((item) => item.id === button.dataset.startLesson);
+      if (lesson) renderLessonFocus(lesson);
+    });
+    $('lesson-focus').addEventListener('click', (event) => {
       const button = event.target.closest('[data-start-lesson]');
       if (button && !button.disabled) openQuiz(button.dataset.startLesson);
     });
@@ -676,7 +798,7 @@
   }
 
   init().catch((error) => {
-    console.error('JavaWave initialization failed:', error);
+    console.error('Javalingo initialization failed:', error);
     showToast('หน้าเว็บเริ่มต้นไม่สำเร็จ ลองรีเฟรชหน้าอีกครั้ง', 'error');
   });
 })();

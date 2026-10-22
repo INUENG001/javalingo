@@ -1,6 +1,6 @@
-package com.javawave.app.controller;
+package com.javalingo.app.controller;
 
-import com.javawave.app.supabase.SupabaseGateway;
+import com.javalingo.app.supabase.SupabaseGateway;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

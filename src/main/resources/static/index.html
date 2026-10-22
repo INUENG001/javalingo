@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#087f77">
-  <meta name="description" content="JavaWave — เรียน Java และ OOP ผ่านบทเรียนสั้น ๆ แบบเกม">
-  <title>JavaWave — Learn Java, level up</title>
+  <meta name="theme-color" content="#101d22">
+  <meta name="description" content="Javalingo — เรียน Java ทีละบท เล่นสนุก และเติบโตไปกับทุก XP">
+  <title>Javalingo — Learn Java, level up</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -17,9 +17,9 @@
 <body>
   <div class="app-shell">
     <aside class="sidebar">
-      <a class="brand" href="#home" aria-label="JavaWave home">
+      <a class="brand" href="#home" aria-label="Javalingo home">
         <span class="brand-mark"><span class="brand-bracket">&lt;/&gt;</span></span>
-        <span class="brand-copy"><strong>java<span>wave</span></strong><small>CODE A LITTLE. GROW A LOT.</small></span>
+        <span class="brand-copy"><strong>java<span>lingo</span></strong><small>CODE A LITTLE. GROW A LOT.</small></span>
       </a>
       <div class="side-label">เมนูหลัก</div>
       <nav class="side-nav" aria-label="เมนูหลัก">
@@ -42,7 +42,7 @@
 
     <main class="main-area">
       <header class="topbar">
-        <div class="mobile-brand"><span class="brand-mark small"><span class="brand-bracket">&lt;/&gt;</span></span><strong>java<span>wave</span></strong></div>
+        <div class="mobile-brand"><span class="brand-mark small"><span class="brand-bracket">&lt;/&gt;</span></span><strong>java<span>lingo</span></strong></div>
         <div class="breadcrumb"><span>พื้นที่เรียนรู้</span><span class="crumb-slash">/</span><strong id="breadcrumb-current">ภาพรวม</strong></div>
         <div class="top-actions">
           <div class="top-stat streak"><span class="stat-emoji">♨</span><span id="streak-value">1</span><small>วันติด</small></div>
@@ -104,13 +104,16 @@
             </section>
           </aside>
         </div>
-        <footer class="page-footer"><span>© 2026 JAVAWAVE</span><span>MADE FOR CURIOUS MINDS <b>✦</b></span></footer>
+        <footer class="page-footer"><span>© 2026 JAVALINGO</span><span>MADE FOR CURIOUS MINDS <b>✦</b></span></footer>
       </section>
 
       <section class="page-view" id="view-learn">
         <div class="page-title-row"><div><p class="eyebrow">THE LEARNING PATH</p><h1>เส้นทางสู่การเป็น <em>Java Developer</em></h1><p class="muted">เรียนทีละบท ปลดล็อกด่านใหม่ และสะสม XP ไปพร้อมกัน</p></div><div class="path-badge"><span>⌘</span><div><strong>6 บทเรียน</strong><small>Java fundamentals + OOP</small></div></div></div>
         <div class="learn-summary"><div><span class="summary-icon">✦</span><div><strong id="learn-summary-xp">0 XP</strong><small>XP ที่คุณสะสมแล้ว</small></div></div><div><span class="summary-icon blue">✓</span><div><strong id="learn-summary-completed">0 / 6</strong><small>บทเรียนที่ผ่าน</small></div></div><div class="summary-meter"><div class="overall-progress-track"><span id="learn-summary-bar"></span></div><small id="learn-summary-percent">0% complete</small></div></div>
-        <div class="lesson-grid" id="full-lesson-grid"></div>
+        <div class="learning-layout">
+          <div class="journey-map" id="full-lesson-grid" aria-label="เส้นทางบทเรียน"></div>
+          <aside class="lesson-focus panel" id="lesson-focus" aria-live="polite"></aside>
+        </div>
       </section>
 
       <section class="page-view" id="view-leaderboard">
@@ -132,7 +135,7 @@
       <button class="modal-close" id="close-auth" aria-label="ปิดหน้าต่าง">×</button>
       <div class="auth-brand"><span class="brand-mark"><span class="brand-bracket">&lt;/&gt;</span></span></div>
       <p class="eyebrow centered">A BETTER WAY TO LEARN JAVA</p>
-      <h2 id="auth-title">เริ่มต้นการเดินทางของคุณ</h2><p class="auth-subtitle">เรียนสนุก เก็บ XP และเติบโตไปพร้อมชุมชน JavaWave</p>
+      <h2 id="auth-title">เริ่มต้นการเดินทางของคุณ</h2><p class="auth-subtitle">เรียนสนุก เก็บ XP และเติบโตไปพร้อมชุมชน Javalingo</p>
       <div class="auth-tabs"><button class="auth-tab active" data-auth-mode="login">เข้าสู่ระบบ</button><button class="auth-tab" data-auth-mode="signup">สมัครสมาชิก</button></div>
       <form id="auth-form">
         <label class="form-field hidden" id="username-field"><span>ชื่อที่ใช้ในชุมชน</span><input id="auth-username" name="username" type="text" minlength="3" maxlength="20" placeholder="เช่น codecat" autocomplete="nickname"></label>
@@ -146,6 +149,13 @@
       <p class="auth-footnote" id="auth-footnote">บัญชีจริงใช้ Supabase Auth และเก็บความคืบหน้าไว้บนฐานข้อมูล</p>
     </div>
   </div>
+
+  <nav class="mobile-nav" aria-label="เมนูหลักบนมือถือ">
+    <button class="mobile-nav-link active" data-view="home"><span>⌂</span>ภาพรวม</button>
+    <button class="mobile-nav-link" data-view="learn"><span>⌘</span>เรียนรู้</button>
+    <button class="mobile-nav-link" data-view="leaderboard"><span>♜</span>คะแนน</button>
+    <button class="mobile-nav-link" data-view="profile"><span>◉</span>โปรไฟล์</button>
+  </nav>
 
   <div class="modal-backdrop hidden" id="quiz-modal" role="dialog" aria-modal="true" aria-labelledby="quiz-title">
     <div class="quiz-modal">

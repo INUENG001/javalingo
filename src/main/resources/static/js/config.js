@@ -1,8 +1,5 @@
-/*
- * ใส่ Project URL และ Publishable key จาก Supabase Dashboard > Settings > API Keys
- * ใช้ publishable key (หรือ legacy anon key) ได้ ห้ามนำ service_role/secret key มาใส่ฝั่ง browser
- */
-window.JAVAWAVE_CONFIG = {
-  SUPABASE_URL: "https://YOUR_PROJECT.supabase.co",
-  SUPABASE_PUBLISHABLE_KEY: "YOUR_SUPABASE_PUBLISHABLE_KEY"
+
+window.JAVALINGO_CONFIG = {
+  SUPABASE_URL: "https://jovqmmbdmvutrdgibtok.supabase.co",
+  SUPABASE_PUBLISHABLE_KEY: "sb_publishable_Bgk0SrVKFzj6vKAFiyNCpA_zl4A0AjE"
 };

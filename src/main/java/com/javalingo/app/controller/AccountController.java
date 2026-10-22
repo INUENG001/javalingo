@@ -1,7 +1,7 @@
-package com.javawave.app.controller;
+package com.javalingo.app.controller;
 
-import com.javawave.app.service.AuthService;
-import com.javawave.app.supabase.SupabaseGateway;
+import com.javalingo.app.service.AuthService;
+import com.javalingo.app.supabase.SupabaseGateway;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,7 +46,7 @@ public class AccountController {
 
     @GetMapping("/health")
     public Map<String, String> health() {
-        return Map.of("status", "ok", "app", "JavaWave");
+        return Map.of("status", "ok", "app", "Javalingo");
     }
 
     private String emailPrefix(Map<String, Object> user) {

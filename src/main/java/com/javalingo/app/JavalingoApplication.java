@@ -1,14 +1,14 @@
-package com.javawave.app;
+package com.javalingo.app;
 
-import com.javawave.app.config.SupabaseProperties;
+import com.javalingo.app.config.SupabaseProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
 @EnableConfigurationProperties(SupabaseProperties.class)
-public class JavaWaveApplication {
+public class JavalingoApplication {
     public static void main(String[] args) {
-        SpringApplication.run(JavaWaveApplication.class, args);
+        SpringApplication.run(JavalingoApplication.class, args);
     }
 }

@@ -1,7 +1,7 @@
-package com.javawave.app.supabase;
+package com.javalingo.app.supabase;
 
-import com.javawave.app.config.SupabaseProperties;
-import com.javawave.app.dto.CompleteLessonRequest;
+import com.javalingo.app.config.SupabaseProperties;
+import com.javalingo.app.dto.CompleteLessonRequest;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

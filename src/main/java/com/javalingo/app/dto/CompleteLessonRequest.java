@@ -1,4 +1,4 @@
-package com.javawave.app.dto;
+package com.javalingo.app.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

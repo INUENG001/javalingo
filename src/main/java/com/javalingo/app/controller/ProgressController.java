@@ -1,8 +1,8 @@
-package com.javawave.app.controller;
+package com.javalingo.app.controller;
 
-import com.javawave.app.dto.CompleteLessonRequest;
-import com.javawave.app.service.AuthService;
-import com.javawave.app.service.ProgressService;
+import com.javalingo.app.dto.CompleteLessonRequest;
+import com.javalingo.app.service.AuthService;
+import com.javalingo.app.service.ProgressService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

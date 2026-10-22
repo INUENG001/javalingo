@@ -1,4 +1,4 @@
-# JavaWave — เรียน Java แบบเกม
+# Javalingo — เรียน Java แบบเกม
 
 เว็บเรียนภาษา Java และแนวคิด OOP แบบ gamified ใช้ HTML/CSS/JavaScript, Java + Spring Boot และ Supabase Auth/Postgres โดยแยกโครงสร้างหลังบ้านตามแนว OOP
 
@@ -12,15 +12,17 @@
 - ตารางคะแนนจาก XP ของผู้ใช้ใน Supabase
 - SQL function ให้คะแนน XP ฝั่งฐานข้อมูล และ Row Level Security (RLS) จำกัดข้อมูลความคืบหน้าให้เจ้าของบัญชีอ่านได้เท่านั้น
 - Responsive layout สำหรับ desktop, tablet และ mobile
+- เส้นทางบทเรียนแบบแผนที่ พร้อมเมนูนำทางล่างบนมือถือ
+- เปลี่ยนชื่อแบรนด์เป็น Javalingo โดยย้ายข้อมูล Demo เดิมจาก localStorage key ของ JavaWave ให้อัตโนมัติเมื่อเปิดหน้าเว็บ
 
 ## เทคโนโลยีและโครงสร้าง
 
 ```text
-javawave/
+javalingo/
 ├── pom.xml
 ├── supabase/schema.sql
 └── src/
-    ├── main/java/com/javawave/app/
+    ├── main/java/com/javalingo/app/
     │   ├── config/        # Properties / HTTP client configuration
     │   ├── controller/    # REST API endpoints
     │   ├── dto/           # Request DTO + validation
@@ -49,7 +51,7 @@ javawave/
 4. เปิดไฟล์ `src/main/resources/static/js/config.js` แล้วแก้ค่าให้เป็นของโปรเจกต์ เช่น
 
    ```js
-   window.JAVAWAVE_CONFIG = {
+   window.JAVALINGO_CONFIG = {
      SUPABASE_URL: "https://your-project-ref.supabase.co",
      SUPABASE_PUBLISHABLE_KEY: "sb_publishable_..."
    };
@@ -61,11 +63,13 @@ javawave/
 
 > `config.js` เก็บเฉพาะ Publishable/anon key ซึ่งออกแบบให้ใช้ใน client ได้ ความปลอดภัยของตารางอาศัย grants และ RLS ตาม SQL ที่ให้ไว้ ห้ามใส่ service role key ในไฟล์นี้
 
+> หากเคยใช้โหมดตัวอย่างก่อนเปลี่ยนชื่อ ข้อมูลความคืบหน้า โปรไฟล์ทดลอง streak และภารกิจวันนี้จะถูกอ่านจาก key เดิมและย้ายไป key ของ Javalingo โดยอัตโนมัติในเบราว์เซอร์เดิม
+
 ## วิธีรันใน VS Code
 
 สิ่งที่ต้องมี: JDK 21, Maven 3.9+ และ VS Code พร้อม Extension Pack for Java และ Spring Boot Extension Pack
 
-1. เปิดโฟลเดอร์ `javawave` ใน VS Code
+1. เปิดโฟลเดอร์ `javalingo` ใน VS Code
 2. เปิด Terminal ในโฟลเดอร์โปรเจกต์
 3. ตั้งค่า URL และ key ให้ Spring Boot (สำหรับ PowerShell):
 
@@ -109,6 +113,14 @@ curl http://localhost:8080/api/leaderboard
 
 Endpoint ที่ต้อง login ต้องส่ง `Authorization: Bearer <Supabase access_token>` ซึ่งหน้าเว็บจัดการให้หลัง sign in
 
+## วิธีตรวจสอบหลังปรับ UI
+
+1. เปิดหน้าเว็บที่ `http://localhost:8080` แล้วลองสมัคร/เข้าสู่ระบบ และตรวจว่าหน้า Auth, ภาพรวม และโปรไฟล์แสดงชื่อ Javalingo
+2. ทำบทเรียนให้ได้อย่างน้อย 3/5 ตรวจ XP, สถานะผ่าน, การปลดล็อกบทถัดไป และ leaderboard ทั้งโหมดตัวอย่างกับบัญชี Supabase
+3. รีเฟรชหน้าในโหมดตัวอย่างเพื่อยืนยันว่าความคืบหน้าจากเบราว์เซอร์เดิมยังอยู่
+4. ตรวจหน้าเส้นทางเรียนด้วยหน้าจอ Desktop, Tablet และ Mobile; บนมือถือให้ลองเมนูด้านล่าง ปุ่มเริ่มบทเรียน และหน้าต่างแบบทดสอบ
+5. ตรวจ DevTools ว่าไม่มี request ที่ใช้ service-role/secret key และ endpoint ที่ต้องล็อกอินตอบกลับ `401` เมื่อไม่มี access token
+
 ## กติกาคะแนน
 
 - ผ่านเมื่อทำถูกอย่างน้อย 3/5 ข้อ
@@ -130,5 +142,5 @@ Endpoint ที่ต้อง login ต้องส่ง `Authorization: Beare
 ```bash
 git init
 git add .
-git commit -m "Initial JavaWave learning app"
+git commit -m "Initial Javalingo learning app"
 ```

@@ -1,8 +1,8 @@
-package com.javawave.app.service;
+package com.javalingo.app.service;
 
-import com.javawave.app.dto.CompleteLessonRequest;
-import com.javawave.app.model.Lesson;
-import com.javawave.app.supabase.SupabaseGateway;
+import com.javalingo.app.dto.CompleteLessonRequest;
+import com.javalingo.app.model.Lesson;
+import com.javalingo.app.supabase.SupabaseGateway;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;

@@ -1,7 +1,7 @@
-package com.javawave.app.controller;
+package com.javalingo.app.controller;
 
-import com.javawave.app.model.Lesson;
-import com.javawave.app.service.LessonCatalog;
+import com.javalingo.app.model.Lesson;
+import com.javalingo.app.service.LessonCatalog;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

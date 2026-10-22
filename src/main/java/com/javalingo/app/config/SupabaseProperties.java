@@ -1,4 +1,4 @@
-package com.javawave.app.config;
+package com.javalingo.app.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

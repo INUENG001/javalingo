@@ -1,4 +1,4 @@
-package com.javawave.app.service;
+package com.javalingo.app.service;
 
 import org.junit.jupiter.api.Test;
 

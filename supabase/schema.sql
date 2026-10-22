@@ -1,4 +1,4 @@
--- JavaWave schema for Supabase. Run this file in Supabase SQL Editor.
+-- Javalingo schema for Supabase. Run this file in Supabase SQL Editor.
 -- Public profile fields are intentionally limited to username + total_xp.
 
 create extension if not exists pgcrypto;
@@ -25,7 +25,7 @@ create index if not exists user_progress_user_id_idx on public.user_progress(use
 create index if not exists profiles_total_xp_idx on public.profiles(total_xp desc);
 
 -- Create a public profile automatically whenever a new Auth user signs up.
-create or replace function public.handle_new_javawave_user()
+create or replace function public.handle_new_javalingo_user()
 returns trigger
 language plpgsql
 security definer
@@ -49,12 +49,13 @@ begin
     return new;
 end;
 $$;
-revoke all on function public.handle_new_javawave_user() from public, anon, authenticated;
+revoke all on function public.handle_new_javalingo_user() from public, anon, authenticated;
 
 drop trigger if exists on_auth_user_created_javawave on auth.users;
-create trigger on_auth_user_created_javawave
+drop trigger if exists on_auth_user_created_javalingo on auth.users;
+create trigger on_auth_user_created_javalingo
 after insert on auth.users
-for each row execute procedure public.handle_new_javawave_user();
+for each row execute procedure public.handle_new_javalingo_user();
 
 alter table public.profiles enable row level security;
 alter table public.user_progress enable row level security;
