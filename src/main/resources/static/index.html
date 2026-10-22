@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#087f77">
+  <meta name="description" content="JavaWave — เรียน Java และ OOP ผ่านบทเรียนสั้น ๆ แบบเกม">
+  <title>JavaWave — Learn Java, level up</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/config.js"></script>
+  <script src="/js/app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#home" aria-label="JavaWave home">
+        <span class="brand-mark"><span class="brand-bracket">&lt;/&gt;</span></span>
+        <span class="brand-copy"><strong>java<span>wave</span></strong><small>CODE A LITTLE. GROW A LOT.</small></span>
+      </a>
+      <div class="side-label">เมนูหลัก</div>
+      <nav class="side-nav" aria-label="เมนูหลัก">
+        <button class="nav-link active" data-view="home"><span class="nav-icon">⌂</span> ภาพรวม <span class="nav-pip"></span></button>
+        <button class="nav-link" data-view="learn"><span class="nav-icon">⌘</span> เส้นทางเรียน</button>
+        <button class="nav-link" data-view="leaderboard"><span class="nav-icon">♜</span> ตารางคะแนน</button>
+        <button class="nav-link" data-view="profile"><span class="nav-icon">◉</span> โปรไฟล์ของฉัน</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="side-promo">
+          <div class="promo-orbit">✦</div>
+          <p class="promo-title">Small steps,<br>big skills.</p>
+          <p class="promo-copy">ฝึกวันละนิด แล้วคุณจะเขียนโค้ดได้เก่งขึ้นทุกวัน</p>
+          <div class="promo-progress"><span></span></div>
+          <small>YOUR NEXT LEVEL IS CLOSE</small>
+        </div>
+        <button class="sidebar-help" id="help-button"><span>ⓘ</span> วิธีใช้งาน</button>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div class="mobile-brand"><span class="brand-mark small"><span class="brand-bracket">&lt;/&gt;</span></span><strong>java<span>wave</span></strong></div>
+        <div class="breadcrumb"><span>พื้นที่เรียนรู้</span><span class="crumb-slash">/</span><strong id="breadcrumb-current">ภาพรวม</strong></div>
+        <div class="top-actions">
+          <div class="top-stat streak"><span class="stat-emoji">♨</span><span id="streak-value">1</span><small>วันติด</small></div>
+          <div class="top-stat xp"><span class="stat-emoji">✦</span><span id="top-xp">0</span><small>XP</small></div>
+          <button class="avatar-button" id="top-avatar" aria-label="เปิดโปรไฟล์">J</button>
+        </div>
+      </header>
+
+      <div class="demo-banner hidden" id="demo-banner"><span>✦</span> โหมดตัวอย่าง — ความคืบหน้าบันทึกเฉพาะในเบราว์เซอร์นี้ <button id="connect-account">เชื่อมบัญชีจริง ↗</button></div>
+
+      <section class="page-view active" id="view-home">
+        <div class="welcome-row">
+          <div><p class="eyebrow">THURSDAY · YOUR LEARNING SPACE</p><h1>พร้อมลุยโค้ดแล้วหรือยัง, <span id="welcome-name">นักพัฒนา</span> <span class="wave-hand">✌️</span></h1><p class="muted intro">ก้าวเล็ก ๆ วันนี้ คือสกิลที่แข็งแกร่งในวันหน้า</p></div>
+          <div class="date-pill"><span class="date-dot"></span> <span id="today-label">LET'S LEARN TODAY</span></div>
+        </div>
+
+        <section class="hero-card">
+          <div class="hero-copy">
+            <div class="hero-tag"><span class="tag-dot"></span> YOUR JAVA JOURNEY</div>
+            <h2>เปลี่ยนความสงสัย<br>ให้กลายเป็น <em>โค้ดจริง</em></h2>
+            <p>เรียน Java ตั้งแต่พื้นฐาน ไปจนถึงแนวคิด OOP ผ่านบทเรียนสั้น ๆ และแบบทดสอบที่ทำให้การฝึกสนุกขึ้น</p>
+            <button class="button button-light" id="continue-button">เรียนต่อเลย <span>↗</span></button>
+            <div class="hero-footnote"><span class="tiny-check">✓</span> 5 ข้อต่อบท · เรียนได้ตามจังหวะของคุณ</div>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="art-ring ring-one"></div><div class="art-ring ring-two"></div>
+            <div class="art-spark spark-one">✦</div><div class="art-spark spark-two">✧</div>
+            <div class="code-float code-top"><span>01</span> public class <b>Future</b> {</div>
+            <div class="code-float code-bottom"><span>02</span> &nbsp; learn(); <b>↗</b></div>
+            <div class="java-tile"><div class="tile-shine"></div><span class="tile-symbol">J</span><span class="tile-dot dot-a"></span><span class="tile-dot dot-b"></span><span class="tile-dot dot-c"></span></div>
+            <div class="art-caption"><span class="caption-pulse"></span> COMPILE YOUR FUTURE</div>
+          </div>
+        </section>
+
+        <div class="section-heading"><div><p class="eyebrow">YOUR PROGRESS</p><h2>การเดินทางของคุณ</h2></div><button class="text-button" data-go-view="learn">ดูเส้นทางทั้งหมด <span>→</span></button></div>
+        <div class="stats-grid">
+          <article class="stat-card"><div class="stat-card-icon icon-teal">✦</div><div class="stat-card-label">คะแนนสะสม</div><div class="stat-card-value"><span id="stat-xp">0</span> <small>XP</small></div><div class="stat-card-foot"><span class="mini-dot teal-dot"></span> ยิ่งฝึก ยิ่งเก่ง</div></article>
+          <article class="stat-card"><div class="stat-card-icon icon-blue">⌘</div><div class="stat-card-label">บทเรียนที่ผ่าน</div><div class="stat-card-value"><span id="stat-completed">0</span><small>/ 6 บท</small></div><div class="stat-card-foot"><span class="mini-dot blue-dot"></span> <span id="stat-progress-text">เริ่มบทแรกได้เลย</span></div></article>
+          <article class="stat-card"><div class="stat-card-icon icon-orange">♨</div><div class="stat-card-label">เรียนต่อเนื่อง</div><div class="stat-card-value"><span id="stat-streak">1</span><small>วัน</small></div><div class="stat-card-foot"><span class="mini-dot orange-dot"></span> รักษาจังหวะของคุณ</div></article>
+        </div>
+
+        <div class="content-grid">
+          <section class="panel learning-panel">
+            <div class="panel-header"><div><p class="eyebrow">PICK UP WHERE YOU LEFT OFF</p><h3>เส้นทาง Java ของคุณ</h3></div><span class="chapter-count" id="chapter-count">0 / 6</span></div>
+            <div class="overall-progress"><div class="overall-progress-track"><span id="overall-progress-bar"></span></div><span id="overall-progress-label">0% complete</span></div>
+            <div class="lesson-path" id="home-lesson-path"></div>
+            <button class="button button-outline full-button" data-go-view="learn">เปิดเส้นทางการเรียน <span>→</span></button>
+          </section>
+          <aside class="right-column">
+            <section class="panel goal-panel">
+              <div class="panel-header"><div><p class="eyebrow">DAILY MISSION</p><h3>เป้าหมายวันนี้</h3></div><span class="goal-sun">☼</span></div>
+              <p class="goal-description">ทำแบบทดสอบให้สำเร็จ 1 บท เพื่อสะสม XP ของคุณ</p>
+              <div class="goal-bottom"><div class="goal-ring" id="goal-ring"><div><strong id="goal-count">0/1</strong><small>บทเรียน</small></div></div><div><strong id="goal-status">เริ่มกันเลย!</strong><p id="goal-subtext">อีกเพียง 1 บทก็สำเร็จแล้ว</p></div></div>
+            </section>
+            <section class="panel mini-leaderboard">
+              <div class="panel-header"><div><p class="eyebrow">THE COMMUNITY</p><h3>นักเรียนยอดเยี่ยม</h3></div><span class="trophy-icon">♜</span></div>
+              <div id="home-leaderboard" class="rank-list"></div>
+              <button class="text-button rank-more" data-go-view="leaderboard">ดูอันดับทั้งหมด <span>→</span></button>
+            </section>
+          </aside>
+        </div>
+        <footer class="page-footer"><span>© 2026 JAVAWAVE</span><span>MADE FOR CURIOUS MINDS <b>✦</b></span></footer>
+      </section>
+
+      <section class="page-view" id="view-learn">
+        <div class="page-title-row"><div><p class="eyebrow">THE LEARNING PATH</p><h1>เส้นทางสู่การเป็น <em>Java Developer</em></h1><p class="muted">เรียนทีละบท ปลดล็อกด่านใหม่ และสะสม XP ไปพร้อมกัน</p></div><div class="path-badge"><span>⌘</span><div><strong>6 บทเรียน</strong><small>Java fundamentals + OOP</small></div></div></div>
+        <div class="learn-summary"><div><span class="summary-icon">✦</span><div><strong id="learn-summary-xp">0 XP</strong><small>XP ที่คุณสะสมแล้ว</small></div></div><div><span class="summary-icon blue">✓</span><div><strong id="learn-summary-completed">0 / 6</strong><small>บทเรียนที่ผ่าน</small></div></div><div class="summary-meter"><div class="overall-progress-track"><span id="learn-summary-bar"></span></div><small id="learn-summary-percent">0% complete</small></div></div>
+        <div class="lesson-grid" id="full-lesson-grid"></div>
+      </section>
+
+      <section class="page-view" id="view-leaderboard">
+        <div class="leaderboard-hero"><p class="eyebrow">CODE. LEARN. RISE.</p><h1>ทุกบรรทัดโค้ด <em>มีความหมาย</em></h1><p>สะสม XP จากการผ่านบทเรียน แล้วมาเจอกันบนกระดานนักพัฒนา</p><div class="leaderboard-decoration" aria-hidden="true"><span>♜</span><i>✦</i><b>⌘</b></div></div>
+        <section class="panel leaderboard-panel"><div class="panel-header"><div><p class="eyebrow">WEEKLY & ALL-TIME</p><h3>ตารางอันดับ XP</h3></div><span class="live-pill"><span></span> LIVE DATA</span></div><div class="leaderboard-list" id="full-leaderboard"></div><p class="leaderboard-note">คะแนนมาจากบทเรียนที่ผ่านครั้งแรก บทที่ทำซ้ำจะอัปเดตคะแนนสูงสุด แต่ไม่เพิ่ม XP ซ้ำ</p></section>
+      </section>
+
+      <section class="page-view" id="view-profile">
+        <div class="page-title-row"><div><p class="eyebrow">YOUR DEVELOPER CARD</p><h1>โปรไฟล์ของฉัน</h1><p class="muted">บันทึกเส้นทางการเรียนรู้และความสำเร็จของคุณ</p></div></div>
+        <section class="profile-card panel"><div class="profile-cover"></div><div class="profile-body"><div class="profile-avatar" id="profile-avatar">J</div><div class="profile-person"><h2 id="profile-name">นักพัฒนา</h2><p id="profile-email">โหมดตัวอย่าง</p><span class="member-badge"><span>✦</span> JAVA EXPLORER</span></div><button class="button button-outline profile-action" id="auth-action">เข้าสู่ระบบ / สมัครสมาชิก</button></div><div class="profile-metrics"><div><strong id="profile-xp">0</strong><span>XP ทั้งหมด</span></div><div><strong id="profile-completed">0 / 6</strong><span>บทเรียนที่ผ่าน</span></div><div><strong id="profile-rank">—</strong><span>อันดับปัจจุบัน</span></div></div></section>
+        <section class="panel achievements-panel"><div class="panel-header"><div><p class="eyebrow">MILESTONES</p><h3>เหรียญความสำเร็จ</h3></div></div><div class="achievement-grid" id="achievement-grid"></div></section>
+        <div class="profile-bottom-actions"><button class="button button-danger hidden" id="logout-button">ออกจากระบบ</button></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="auth-gate" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <div class="auth-modal">
+      <button class="modal-close" id="close-auth" aria-label="ปิดหน้าต่าง">×</button>
+      <div class="auth-brand"><span class="brand-mark"><span class="brand-bracket">&lt;/&gt;</span></span></div>
+      <p class="eyebrow centered">A BETTER WAY TO LEARN JAVA</p>
+      <h2 id="auth-title">เริ่มต้นการเดินทางของคุณ</h2><p class="auth-subtitle">เรียนสนุก เก็บ XP และเติบโตไปพร้อมชุมชน JavaWave</p>
+      <div class="auth-tabs"><button class="auth-tab active" data-auth-mode="login">เข้าสู่ระบบ</button><button class="auth-tab" data-auth-mode="signup">สมัครสมาชิก</button></div>
+      <form id="auth-form">
+        <label class="form-field hidden" id="username-field"><span>ชื่อที่ใช้ในชุมชน</span><input id="auth-username" name="username" type="text" minlength="3" maxlength="20" placeholder="เช่น codecat" autocomplete="nickname"></label>
+        <label class="form-field"><span>อีเมล</span><input id="auth-email" name="email" type="email" placeholder="you@example.com" autocomplete="email" required></label>
+        <label class="form-field"><span>รหัสผ่าน</span><input id="auth-password" name="password" type="password" minlength="6" placeholder="อย่างน้อย 6 ตัวอักษร" autocomplete="current-password" required></label>
+        <p class="auth-message hidden" id="auth-message" role="status"></p>
+        <button class="button button-primary full-button" id="auth-submit" type="submit">เข้าสู่ระบบ <span>→</span></button>
+      </form>
+      <div class="auth-divider"><span></span> หรือ <span></span></div>
+      <button class="button button-outline full-button" id="demo-button">ลองใช้งานโหมดตัวอย่าง <span>✦</span></button>
+      <p class="auth-footnote" id="auth-footnote">บัญชีจริงใช้ Supabase Auth และเก็บความคืบหน้าไว้บนฐานข้อมูล</p>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="quiz-modal" role="dialog" aria-modal="true" aria-labelledby="quiz-title">
+    <div class="quiz-modal">
+      <div class="quiz-top"><button class="quiz-close" id="quiz-close" aria-label="ปิดแบบทดสอบ">×</button><div class="quiz-progress-track"><span id="quiz-progress-bar"></span></div><span class="quiz-counter" id="quiz-counter">1 / 5</span></div>
+      <div id="quiz-question-area">
+        <div class="quiz-meta"><span class="quiz-tag">JAVA CHALLENGE</span><span class="quiz-xp">✦ +XP</span></div>
+        <h2 id="quiz-title">มาทบทวนกัน!</h2><p id="quiz-question" class="quiz-question"></p>
+        <div id="quiz-code" class="quiz-code hidden"></div>
+        <div id="quiz-options" class="quiz-options"></div>
+        <div class="quiz-feedback hidden" id="quiz-feedback"></div>
+        <div class="quiz-bottom"><span id="quiz-hint">เลือกคำตอบที่ถูกต้องที่สุด</span><button class="button button-primary" id="quiz-next" disabled>ตรวจคำตอบ <span>→</span></button></div>
+      </div>
+      <div id="quiz-result-area" class="hidden"></div>
+    </div>
+  </div>
+
+  <div class="toast-region" id="toast-region" aria-live="polite"></div>
+</body>
+</html>
